@@ -14,6 +14,9 @@ import com.oreilly.maventoys.models.Store;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,14 +27,14 @@ public class StoreService {
     private final EmployeeRepository employeeRepository;
     private final SaleRepository saleRepository;
 
-    @Autowired
+    @Autowired // Inyeccion
     public StoreService(StoreRepository storeRepository, EmployeeRepository employeeRepository, SaleRepository saleRepository) {
         this.storeRepository = storeRepository;
         this.employeeRepository = employeeRepository;
         this.saleRepository = saleRepository;
     }
 
-
+//Metodos, los plurales necesitan <list> recuerda
     public List<StoreDTO> findAllActiveStoreDTOs() {
         List<Store> activeStores = storeRepository.findByActive(true);
         return activeStores.stream()
@@ -90,7 +93,10 @@ public class StoreService {
                 .collect(Collectors.toList());
     }
 
-
+    public Page<StoreDTO> findAllStores(Pageable pageable) {
+        Page<Store> storePage = storeRepository.findAll(pageable);
+        return storePage.map(StoreMapper.INSTANCE::storeToStoreDTO);
+    }
 
 
 }

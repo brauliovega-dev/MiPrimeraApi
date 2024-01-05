@@ -6,9 +6,15 @@ import com.oreilly.maventoys.dto.StoreDTO;
 import com.oreilly.maventoys.service.StoreService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Pageable;
+
 
 import java.util.List;
 
@@ -77,6 +83,15 @@ public class StoreController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/paged")
+    public ResponseEntity<Page<StoreDTO>> getStoresPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit) {
+        Pageable pageable = PageRequest.of(page, limit);
+        Page<StoreDTO> storePage = storeService.findAllStores(pageable);
+        return ResponseEntity.ok(storePage);
     }
 
 

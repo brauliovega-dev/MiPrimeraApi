@@ -1,7 +1,6 @@
 package com.oreilly.maventoys.dto;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime; // Cambio de Date a LocalDateTime para una mejor práctica con Java 8+.
 
 public class SaleDTO {
 

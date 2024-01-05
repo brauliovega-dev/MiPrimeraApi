@@ -6,10 +6,10 @@ public class EmployeeDTO {
     private Long id;
     private String firstName;
     private String lastName;
-    private LocalDate hireDate; // Asumiendo que quieres la fecha de contratación como LocalDate
-    private String gender; // Asumiendo que quieres almacenar el género como String
-    private LocalDate birthDate; // Asumiendo que quieres la fecha de nacimiento como LocalDate
-    private boolean active; // Usando tipo primitivo boolean para coincidir con el tipo de dato bool
+    private LocalDate hireDate;
+    private String gender;
+    private LocalDate birthDate;
+    private boolean active;
 
     // Getters y setters para cada campo
 
