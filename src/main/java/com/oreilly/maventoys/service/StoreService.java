@@ -7,18 +7,18 @@ import com.oreilly.maventoys.mapper.SaleMapper;
 import com.oreilly.maventoys.mapper.StoreMapper;
 import com.oreilly.maventoys.models.Employee;
 import com.oreilly.maventoys.models.Sales;
+import com.oreilly.maventoys.models.Store;
 import com.oreilly.maventoys.repository.EmployeeRepository;
 import com.oreilly.maventoys.repository.SaleRepository;
 import com.oreilly.maventoys.repository.StoreRepository;
-import com.oreilly.maventoys.models.Store;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,14 +27,14 @@ public class StoreService {
     private final EmployeeRepository employeeRepository;
     private final SaleRepository saleRepository;
 
-    @Autowired // Inyeccion
+    @Autowired // Inyeccion de dependencias
     public StoreService(StoreRepository storeRepository, EmployeeRepository employeeRepository, SaleRepository saleRepository) {
         this.storeRepository = storeRepository;
         this.employeeRepository = employeeRepository;
         this.saleRepository = saleRepository;
     }
 
-//Metodos, los plurales necesitan <list> recuerda
+    // Recupera todos los DTOs de las tiendas activas
     public List<StoreDTO> findAllActiveStoreDTOs() {
         List<Store> activeStores = storeRepository.findByActive(true);
         return activeStores.stream()
@@ -42,23 +42,25 @@ public class StoreService {
                 .collect(Collectors.toList());
     }
 
+    // Encuentra un DTO de tienda por su ID
     public StoreDTO findStoreDTOById(Long id) {
         return storeRepository.findById(id)
                 .map(StoreMapper.INSTANCE::storeToStoreDTO)
                 .orElseThrow(() -> new EntityNotFoundException("No se pudo encontrar la tienda con ID: " + id));
     }
 
+    // Crea una nueva tienda a partir de un DTO y la guarda en la base de datos
     public StoreDTO createStore(StoreDTO storeDTO) {
         Store store = StoreMapper.INSTANCE.storeDTOToStore(storeDTO);
         store = storeRepository.save(store);
         return StoreMapper.INSTANCE.storeToStoreDTO(store);
     }
 
+    // Actualiza una tienda existente usando su ID y un DTO
     public StoreDTO updateStore(Long id, StoreDTO storeDTO) {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No se pudo encontrar la tienda con ID: " + id));
 
-        // Actualiza solo el nombre y la ciudad
         store.setName(storeDTO.getName());
         store.setCity(storeDTO.getCity());
         store.setLocation(storeDTO.getLocation());
@@ -68,6 +70,8 @@ public class StoreService {
         Store updatedStore = storeRepository.save(store);
         return StoreMapper.INSTANCE.storeToStoreDTO(updatedStore);
     }
+
+    // Convierte un objeto Employee a EmployeeDTO
     private EmployeeDTO convertToEmployeeDTO(Employee employee) {
         EmployeeDTO dto = new EmployeeDTO();
         dto.setId((long) employee.getId());
@@ -79,6 +83,8 @@ public class StoreService {
         dto.setActive(employee.isActive());
         return dto;
     }
+
+    // Encuentra todos los empleados de una tienda específica por su ID
     public List<EmployeeDTO> findEmployeesByStoreId(Long storeId) {
         List<Employee> employees = employeeRepository.findByStoreId(storeId);
         return employees.stream()
@@ -86,6 +92,7 @@ public class StoreService {
                 .collect(Collectors.toList());
     }
 
+    // Encuentra todas las ventas asociadas a una tienda por su ID
     public List<SaleDTO> findSalesByStoreId(int storeId) {
         List<Sales> salesList = saleRepository.findByStoreId(storeId);
         return salesList.stream()
@@ -93,10 +100,37 @@ public class StoreService {
                 .collect(Collectors.toList());
     }
 
+    // Recupera todas las tiendas con paginación
     public Page<StoreDTO> findAllStores(Pageable pageable) {
         Page<Store> storePage = storeRepository.findAll(pageable);
         return storePage.map(StoreMapper.INSTANCE::storeToStoreDTO);
     }
 
+
+    public StoreDTO updateStore(int id, StoreDTO storeDTO) {
+        Optional<Store> storeOptional = storeRepository.findById((long) id);
+
+        if(storeOptional.isPresent()){
+            Store store = storeOptional.get();
+
+            // Actualiza solo los campos que no son null en StoreDTO
+            if(storeDTO.getName() != null) store.setName(storeDTO.getName());
+            if(storeDTO.getCity() != null) store.setCity(storeDTO.getCity());
+            if(storeDTO.getLocation() != null) store.setLocation(storeDTO.getLocation());
+            if(storeDTO.getOpenDate() != null) store.setOpenDate(storeDTO.getOpenDate());
+            if(storeDTO.getActive() != null) store.setActive(storeDTO.getActive());
+
+            Store updatedStore = storeRepository.save(store);
+            return StoreMapper.INSTANCE.storeToStoreDTO(updatedStore);
+        }
+
+        // Maneja el caso en que el store no se encuentra
+        return null;
+    }
+
+
+    public Double getTotalSalesByStore(Long storeId) {
+        return saleRepository.sumTotalByStoreId(storeId).orElse(0.0);
+    }
 
 }

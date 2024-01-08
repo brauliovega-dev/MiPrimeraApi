@@ -11,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Pageable;
 
 
@@ -92,6 +90,23 @@ public class StoreController {
         Pageable pageable = PageRequest.of(page, limit);
         Page<StoreDTO> storePage = storeService.findAllStores(pageable);
         return ResponseEntity.ok(storePage);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<StoreDTO> updateStore(@PathVariable int id, @RequestBody StoreDTO storeDTO) {
+        StoreDTO updatedStore = storeService.updateStore(id, storeDTO);
+
+        if(updatedStore == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(updatedStore);
+    }
+
+    @GetMapping("/{id}/totalSales")
+    public ResponseEntity<Double> getTotalSalesByStore(@PathVariable Long id) {
+        Double totalSales = storeService.getTotalSalesByStore(id);
+        return ResponseEntity.ok(totalSales);
     }
 
 
