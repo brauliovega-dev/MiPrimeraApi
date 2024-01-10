@@ -101,5 +101,4 @@ public class Employee {
         this.active = active;
     }
 
-    // hashCode, equals, and toString methods, if necessary
 }

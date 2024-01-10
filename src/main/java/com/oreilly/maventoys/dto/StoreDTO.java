@@ -2,6 +2,7 @@ package com.oreilly.maventoys.dto;
 
 
 import java.time.LocalDate;
+//El StoreDTO se utiliza para transferir datos de la tienda de forma optimizada y desacoplada del modelo de dominio.
 
 public class StoreDTO {
     private int id;

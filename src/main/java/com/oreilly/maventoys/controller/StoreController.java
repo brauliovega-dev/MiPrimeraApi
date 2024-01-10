@@ -24,11 +24,13 @@ public class StoreController {
 
     @Autowired
     public StoreController(StoreService storeService) {
+
         this.storeService = storeService;
     }
 
     @GetMapping
     public List<StoreDTO> getActiveStores() {
+
         return storeService.findAllActiveStoreDTOs();
     }
 

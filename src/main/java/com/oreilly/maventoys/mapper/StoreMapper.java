@@ -12,3 +12,8 @@ public interface StoreMapper {
     StoreDTO storeToStoreDTO(Store store);
     Store storeDTOToStore(StoreDTO storeDTO);
 }
+
+//El StoreMapper facilita la conversión entre el
+// modelo de dominio (Store) y el DTO (StoreDTO),
+// utilizando MapStruct para automatizar y
+// estandarizar este proceso.

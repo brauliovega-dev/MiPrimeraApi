@@ -1,4 +1,4 @@
-package com.oreilly.maventoys.mapper;
+    package com.oreilly.maventoys.mapper;
 
 import com.oreilly.maventoys.dto.SaleDTO;
 import com.oreilly.maventoys.models.Sales;
